@@ -2,7 +2,6 @@
 name = "rsa_public_encrypt_pkcs1"
 version = "0.1.0"
 authors = ["ice_iix <ice_ix@protonmail.ch>"]
-edition = "2018"
 
 [dependencies]
 num = "0.2.0"
