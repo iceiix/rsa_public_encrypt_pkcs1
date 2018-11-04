@@ -2,6 +2,11 @@
 name = "rsa_public_encrypt_pkcs1"
 version = "0.1.0"
 authors = ["ice_iix <ice_ix@protonmail.ch>"]
+description = "RSA PKCS#1 encryption from ASN.1 DER encoded public key in pure Rust"
+license = "ISC"
+repository = "https://github.com/iceiix/rsa_public_encrypt_pkcs1"
+category = ["crypto"]
+keywords = ["rsa", "pkcs", "pkcs1", "pkcs1v15", "encryption", "publickey", "asn1", "asymmetric"]
 
 [dependencies]
 num = "0.1.42"
