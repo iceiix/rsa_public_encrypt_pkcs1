@@ -5,3 +5,6 @@ authors = ["ice_iix <ice_ix@protonmail.ch>"]
 edition = "2018"
 
 [dependencies]
+num = "0.2.0"
+simple_asn1 = { git = "https://github.com/acw/simple_asn1", rev = "823fc31f6f9ba0636207226901f46d50eb1fdd01" }
+rand = "0.5.5"
