@@ -6,7 +6,7 @@ description = "RSA PKCS#1 encryption from ASN.1 DER encoded public key in pure R
 license = "ISC"
 repository = "https://github.com/iceiix/rsa_public_encrypt_pkcs1"
 category = ["crypto"]
-keywords = ["rsa", "pkcs", "pkcs1", "pkcs1v15", "encryption", "publickey", "asn1", "asymmetric"]
+keywords = ["rsa", "pkcs1", "encryption", "publickey", "asn1"]
 
 [dependencies]
 num = "0.1.42"
