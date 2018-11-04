@@ -131,6 +131,32 @@ mod tests {
     #[test]
     fn it_works() {
         assert_eq!(2 + 2, 4);
+        assert_eq!(encrypt(&[], &[]), Err("Encountered an empty buffer decoding ASN1 block.".to_string()));
+        //assert_eq!(encrypt(&[1], &[]), Err("Encountered an empty buffer decoding ASN1 block.".to_string())); // simple_asn1 panics TODO
+        // TODO: test more errors
+
+        /*
+     $ openssl asn1parse -inform DER -in /tmp/d
+    0:d=0  hl=3 l= 159 cons: SEQUENCE
+    3:d=1  hl=2 l=  13 cons: SEQUENCE
+    5:d=2  hl=2 l=   9 prim: OBJECT            :rsaEncryption
+   16:d=2  hl=2 l=   0 prim: NULL
+   18:d=1  hl=3 l= 141 prim: BIT STRING
+   */
+        // 1024-bit (128-byte) public key, encoded in ASN.1 DER
+        let pk = [48, 129, 159, 48, 13, 6, 9, 42, 134, 72, 134, 247, 13, 1, 1, 1, 5, 0, 3, 129, 141, 0, 48, 129, 137, 2, 129, 129, 0, 149, 92, 126, 71, 214, 186, 100, 139, 40, 104, 65, 254, 200, 105, 71, 66, 241, 84, 172, 206, 206, 217, 49, 214, 16, 50, 6, 234, 97, 21, 170, 139, 234, 88, 220, 105, 27, 115, 56, 103, 53, 234, 84, 255, 129, 147, 41, 146, 68, 39, 120, 208, 141, 142, 39, 242, 182, 97, 4, 204, 236, 190, 104, 101, 234, 46, 71, 248, 55, 88, 213, 56, 145, 154, 142, 184, 144, 55, 105, 241, 179, 205, 174, 107, 40, 77, 46, 201, 197, 51, 20, 246, 95, 207, 227, 5, 210, 42, 107, 135, 219, 126, 207, 216, 181, 2, 130, 57, 203, 239, 232, 68, 220, 131, 211, 86, 168, 125, 193, 91, 148, 153, 109, 76, 109, 50, 2, 139, 2, 3, 1, 0, 1];
+
+        // Raw RSA PKCS#1 encryption requires message isn't much longer than the key size (no hash)
+        assert_eq!(encrypt(&pk, &[0; 128]), Err("PKCS#1 error: message too long".to_string()));
+        assert_eq!(encrypt(&pk, &[0; 128-1]), Err("PKCS#1 error: message too long".to_string()));
+        assert_eq!(encrypt(&pk, &[0; 128-2]), Err("PKCS#1 error: message too long".to_string()));
+        assert_eq!(encrypt(&pk, &[0; 128-10]), Err("PKCS#1 error: message too long".to_string()));
+
+        // Successful encryption
+        // TODO: fix random bytes and add result test vectors
+        assert_eq!(encrypt(&pk, &[]).is_ok(), true);
+        assert_eq!(encrypt(&pk, &[1, 2, 3, 4]).is_ok(), true);
+        assert_eq!(encrypt(&pk, &[0; 128-11]).is_ok(), true);
     }
 }
 
