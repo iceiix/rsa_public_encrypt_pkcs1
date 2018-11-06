@@ -3,27 +3,8 @@ extern crate simple_asn1;
 extern crate rand;
 
 use num::bigint::{BigInt};
-use simple_asn1::{from_der, ASN1Block, ASN1DecodeErr};
+use simple_asn1::{from_der, ASN1Block};
 use rand::Rng;
-
-// Workaround for simple_asn 0.1.0 until next version is published (then remove)
-// https://github.com/acw/simple_asn1/commit/823fc31f6f9ba0636207226901f46d50eb1fdd01
-fn asn1_err_to_string(err: simple_asn1::ASN1DecodeErr) -> String {
-    return match err {
-        ASN1DecodeErr::EmptyBuffer =>
-            "Encountered an empty buffer decoding ASN1 block.",
-        ASN1DecodeErr::BadBooleanLength =>
-            "Bad length field in boolean block.",
-        ASN1DecodeErr::LengthTooLarge =>
-            "Length field too large for object type.",
-        ASN1DecodeErr::UTF8DecodeFailure =>
-            "UTF8 string failed to properly decode.",
-        ASN1DecodeErr::PrintableStringDecodeFailure =>
-            "Printable string failed to properly decode.",
-        ASN1DecodeErr::InvalidDateValue(_) =>
-            "Invalid date value."
-    }.to_string()
-}
 
 fn find_bitstrings(asns: Vec<ASN1Block>, mut result: &mut Vec<Vec<u8>>) {
     for asn in asns.iter() {
@@ -37,14 +18,14 @@ fn find_bitstrings(asns: Vec<ASN1Block>, mut result: &mut Vec<Vec<u8>>) {
 
 pub fn encrypt(der_pubkey: &[u8], message: &[u8]) -> Result<Vec<u8>, String> {
     // Outer ASN.1 encodes 1.2.840.113549.1.1 OID and wraps a bitstring, find it
-    let asns: Vec<ASN1Block> = from_der(&der_pubkey).map_err(|err| asn1_err_to_string(err))?;
+    let asns: Vec<ASN1Block> = from_der(&der_pubkey).map_err(|err| err.to_string())?;
     let mut result: Vec<Vec<u8>> = vec![];
     find_bitstrings(asns, &mut result);
     if result.len() == 0 {
         return Err("ASN.1 BitString not found in DER encoding of public key".to_string());
     }
 
-    let inner_asn: Vec<ASN1Block> = from_der(&result[0]).map_err(|err| asn1_err_to_string(err))?;
+    let inner_asn: Vec<ASN1Block> = from_der(&result[0]).map_err(|err| err.to_string())?;
     let (n, e) =
     match &inner_asn[0] {
         ASN1Block::Sequence(_, _, blocks) => {
