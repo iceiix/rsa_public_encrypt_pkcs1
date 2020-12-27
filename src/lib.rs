@@ -72,7 +72,7 @@ pub fn encrypt(der_pubkey: &[u8], message: &[u8]) -> Result<Vec<u8>, String> {
     let mut padding = vec![1; k - message.len() - 3];
     let mut i = 0;
     while i < padding.len() {
-        padding[i] = rand::thread_rng().gen_range(1, 255);
+        padding[i] = rand::thread_rng().gen_range(1..255);
         i += 1;
     }
 
