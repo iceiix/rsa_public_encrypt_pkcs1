@@ -9,8 +9,8 @@ use rand::Rng;
 fn find_bitstrings(asns: Vec<ASN1Block>, mut result: &mut Vec<Vec<u8>>) {
     for asn in asns.iter() {
         match asn {
-            ASN1Block::BitString(_, _, _, bytes) => result.push(bytes.to_vec()),
-            ASN1Block::Sequence(_, _,  blocks) => find_bitstrings(blocks.to_vec(), &mut result),
+            ASN1Block::BitString(_, _, bytes) => result.push(bytes.to_vec()),
+            ASN1Block::Sequence(_, blocks) => find_bitstrings(blocks.to_vec(), &mut result),
             _ => (),
         }
     }
@@ -28,18 +28,18 @@ pub fn encrypt(der_pubkey: &[u8], message: &[u8]) -> Result<Vec<u8>, String> {
     let inner_asn: Vec<ASN1Block> = from_der(&result[0]).map_err(|err| err.to_string())?;
     let (n, e) =
     match &inner_asn[0] {
-        ASN1Block::Sequence(_, _, blocks) => {
+        ASN1Block::Sequence(_, blocks) => {
             if blocks.len() != 2 {
                 return Err("ASN.1 sequence bad length, expected exactly two blocks in inner Sequence".to_string());
             }
 
             let n = match &blocks[0] {
-                ASN1Block::Integer(_, _, n) => n,
+                ASN1Block::Integer(_, n) => n,
                 _ => return Err("ASN.1 Integer modulus not found".to_string()),
             };
 
             let e = match &blocks[1] {
-                ASN1Block::Integer(_, _, e) => e,
+                ASN1Block::Integer(_, e) => e,
                 _ => return Err("ASN.1 Integer exponent not found".to_string()),
             };
             (n, e)
@@ -49,7 +49,7 @@ pub fn encrypt(der_pubkey: &[u8], message: &[u8]) -> Result<Vec<u8>, String> {
     };
 
     // PKCS#1 padding https://tools.ietf.org/html/rfc8017#section-7.2.1 RSAES-PKCS1-V1_5-ENCRYPT ((n, e), M)
-    let k = n.bits() / 8; // bytes in modulus
+    let k = (n.bits() / 8) as usize; // bytes in modulus
     // TODO: is it possible this will be a non-integral value, do we need to handle this case?
     //if k != 1024/8 { panic!("expected 1024-bit modulus"); }
 
@@ -111,7 +111,7 @@ pub fn encrypt(der_pubkey: &[u8], message: &[u8]) -> Result<Vec<u8>, String> {
     }
 
     // 2.  Let c = m^e mod n.
-    let ciphertext_bigint = m.modpow(&e, &n);
+    let ciphertext_bigint = m.modpow(e, n);
 
     /*     c.  Convert the ciphertext representative c to a ciphertext C
      *         of length k octets (see Section 4.1):
