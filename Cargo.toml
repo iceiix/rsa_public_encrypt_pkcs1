@@ -1,6 +1,6 @@
 [package]
 name = "rsa_public_encrypt_pkcs1"
-version = "0.3.0"
+version = "0.4.0"
 authors = ["ice_iix <ice_ix@protonmail.ch>"]
 description = "RSA PKCS#1 encryption from ASN.1 DER encoded public key in pure Rust"
 license = "ISC"
