@@ -9,5 +9,5 @@ keywords = ["rsa", "pkcs1", "encryption", "publickey", "asn1"]
 
 [dependencies]
 num = "0.4.0"
-simple_asn1 = "0.5.4"
+simple_asn1 = "0.6.1"
 rand = "0.8.0"
